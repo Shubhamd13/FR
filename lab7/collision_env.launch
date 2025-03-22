@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="x_pos" default="0.0"/>
+  <arg name="y_pos" default="0.0"/>
+  <arg name="z_pos" default="0.0"/>
+  <arg name="world_file" value="$(find ee144w25)/src/lab7/obs_env_moving_s1.world"/>
+  <!-- <arg name="world_file" value="$(find ee144w25)/src/lab7/obs_env_moving_s2.world"/> -->
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world_file)"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+<!-- put dashdash before inorder -->
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf" args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+
+  <node name="load_collision" pkg="ee144w25" type="move_cylinder_s1.py" output="screen"/>
+
+  <!-- <node name="load_collision" pkg="ee144w25" type="move_cylinder_s2.py" output="screen"/> -->
+
+  <node name="run_distance" pkg="ee144w25" type="robot_move_distance.py" output="screen"/>
+
+  <!-- <node name="run_time" pkg="ee144w25" type="robot_move_ttc.py" output="screen"/>  -->
+
+
+</launch>
